@@ -8,7 +8,6 @@ public class Bear extends Critter{
         slash = true;
     }
     public Action getMove(CritterInfo info) {
-        slash = !slash;
         if(info.getFront() == Neighbor.OTHER){
             return Action.INFECT;
         }
@@ -31,6 +30,7 @@ public class Bear extends Critter{
         }
     }
     public String toString() {
+        slash = !slash;
         if (slash){
             return "/";
         }

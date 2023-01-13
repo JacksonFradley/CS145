@@ -2,6 +2,7 @@ import java.awt.*;
 import java.util.*;
 public class Lion extends Critter{
     private int count;
+    private int currentC;
 
     public Action getMove(CritterInfo info) {
         if(info.getFront() == Neighbor.OTHER){
@@ -21,24 +22,13 @@ public class Lion extends Critter{
 
 
     public Color getColor() {
+        Color[] colors = {Color.RED, Color.GREEN, Color.BLUE};
+        if (count % 3 == 0){
+            currentC = (int)(Math.random() * 3);
+        }
         count++;
-        if (count >= 4){
-            count = 0;
-        }
-        Random rand = new Random();
-        int randomNumber = rand.nextInt(3);
-
-        if (randomNumber == 1) {
-            return Color.RED;
-        }
-        else if (randomNumber == 2) {
-            return Color.GREEN;
-        }
-        else {
-                return Color.BLUE;
-        }
-
-        }
+        return colors[currentC];
+    }
 
     public String toString() {
             return "L";
