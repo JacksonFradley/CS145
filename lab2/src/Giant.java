@@ -1,6 +1,8 @@
 import java.awt.*;
 public class Giant extends Critter{
     private int count;
+    private int feCount;
+    private int currentFe;
     public Action getMove(CritterInfo info) {
         if(info.getFront() == Neighbor.OTHER){
             return Action.INFECT;
@@ -19,19 +21,13 @@ public class Giant extends Critter{
             return Color.GRAY;
     }
     public String toString() {
-        count= count+1;
-        if (count >= 24){
-            count = 0;
+        String[] feFiFoFu = { "fum", "fee", "fie", "foe",};
+        if(count % 6 == 0){
+            feCount++;
+            currentFe = feCount % 4;
         }
-        if (count <= 5) {
-            return "FEE";
-        } else if (count >= 6 && count <= 11) {
-            return "FIE";
-        } else if (count >= 12 && count <= 17) {
-            return "FOE";
-        } else {
-            return "FUM";
-        }
+        count++;
+        return feFiFoFu[currentFe];
     }
 
 
