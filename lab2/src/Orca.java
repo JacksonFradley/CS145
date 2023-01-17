@@ -24,13 +24,13 @@ public class Orca extends Critter{
         if(info.getFront() == Critter.Neighbor.SAME || info.getFront() == Critter.Neighbor.WALL){
             nearby++;
         }
-        if(info.getRight() == Critter.Neighbor.SAME || info.getFront() == Critter.Neighbor.WALL){
+        if(info.getRight() == Critter.Neighbor.SAME || info.getRight() == Critter.Neighbor.WALL){
             nearby++;
         }
-        if(info.getBack() == Critter.Neighbor.SAME || info.getFront() == Critter.Neighbor.WALL){
+        if(info.getBack() == Critter.Neighbor.SAME || info.getBack() == Critter.Neighbor.WALL){
             nearby++;
         }
-        if(info.getLeft() == Critter.Neighbor.SAME || info.getFront() == Critter.Neighbor.WALL){
+        if(info.getLeft() == Critter.Neighbor.SAME || info.getLeft() == Critter.Neighbor.WALL){
             nearby++;
         }
 
