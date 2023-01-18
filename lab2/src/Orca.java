@@ -3,6 +3,8 @@ import java.awt.*;
 import java.lang.reflect.*;
 
 public class Orca extends Critter{
+    private boolean kill = false;
+    private int currentC;
 
     private static enum Swing {
         Left,
@@ -17,6 +19,7 @@ public class Orca extends Critter{
 
         // priority one is always to infect
         if(info.getFront() == Critter.Neighbor.OTHER){
+            kill = true;
             return Critter.Action.INFECT;
         }
 
@@ -99,11 +102,23 @@ public class Orca extends Critter{
     }
 
     public Color getColor() {
-        return Color.MAGENTA;
+        if(kill) {
+            Color[] colors = {Color.cyan, Color.MAGENTA, Color.BLUE};
+            currentC = (int) (Math.random() * 3);
+            return colors[currentC];
+        }
+        else{
+            return Color.BLACK;
+        }
     }
-    public String toString() {
-        return "B";
 
+    public String toString() {
+        if(kill) {
+            return "‖‖";
+        }
+        else{
+            return "⌈⌋";
+        }
 
     }
 
