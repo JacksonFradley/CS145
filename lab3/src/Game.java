@@ -16,8 +16,8 @@ public class Game {
         boolean playing = true;
         //split deck between a player array and a cpu array
         DeckOfCards startDeck = new DeckOfCards();
-        ArrayList<card> playerDeck = new ArrayList<card>();
-        ArrayList<card> cpuDeck = new ArrayList<card>();
+        ArrayList<Card> playerDeck = new ArrayList<Card>();
+        ArrayList<Card> cpuDeck = new ArrayList<Card>();
 
         for (int counter = 0; counter < 26; counter++) {
             playerDeck.add(startDeck.deck.get(counter));
