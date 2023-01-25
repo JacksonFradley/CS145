@@ -1,9 +1,7 @@
 import java.awt.*;
 
-import java.lang.reflect.*;
-
-public class Orca extends Critter{
-    private boolean kill = false;
+public class IGOR extends Critter{
+    private boolean core = false;
     private int currentC;
 
     private static enum Swing {
@@ -14,12 +12,12 @@ public class Orca extends Critter{
 
 
     public Critter.Action getMove(CritterInfo info) {
+        core = false;
         //initialize variables
         int nearby = 0;
 
         // priority one is always to infect
         if(info.getFront() == Critter.Neighbor.OTHER){
-            kill = true;
             return Critter.Action.INFECT;
         }
 
@@ -42,6 +40,7 @@ public class Orca extends Critter{
 
             //if 4, spin
             case 4:
+                core = true;
                 return Action.RIGHT;
 
             //if 0, fly south
@@ -102,7 +101,7 @@ public class Orca extends Critter{
     }
 
     public Color getColor() {
-        if(kill) {
+        if(core) {
             Color[] colors = {Color.cyan, Color.MAGENTA, Color.BLUE};
             currentC = (int) (Math.random() * 3);
             return colors[currentC];
@@ -113,7 +112,7 @@ public class Orca extends Critter{
     }
 
     public String toString() {
-        if(kill) {
+        if(core) {
             return "‖‖";
         }
         else{
