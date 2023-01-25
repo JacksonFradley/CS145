@@ -26,6 +26,7 @@ public class Game {
             cpuDeck.add(startDeck.deck.get(counter + 26));
         }
 
+        // i really don't like using this try. i'm sure theres a better way but i'm running out of time
         try {
             //place card? or status
             while (playing == true) {
