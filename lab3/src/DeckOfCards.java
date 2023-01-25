@@ -1,12 +1,23 @@
+import java.util.ArrayList;
 import java.util.Collections;
-public class DeckOfCards {
-    private Card[] deck = new Card[52];
-    private String[] buildSuit = {"clubs", "diamonds", "hearts", "spades"};
-    private String[] buildRank = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen", "king", "ace"};
 
-    public DeckOfCards(){
-        // builds the deck and automatically shuffles it.
-        // if I feel like adding a lil extra sauce maybe there's a shuffle method that this constructor uses
+public class DeckOfCards{
+    public ArrayList<Card> deck = new ArrayList<Card>();
+    String[] suits = {"Clubs", "Diamonds", "Hearts", "Spades"};
+    String[] ranks = {"2", "3", "4", "5", "6", "7", "8", "9"
+            , "10", "Jack", "Queen", "King", "Ace"};
+    //EnumSet.allOf(card.Suit.class).forEach(suit -> System.out.println(suit));
 
+    // Build the deck
+    DeckOfCards(){
+
+        for(String rank : ranks){
+                for (String suit : suits) {
+                    deck.add(new Card(suit, rank));
+                }
+            }
+
+            // Shuffle the deck
+        Collections.shuffle(deck);
     }
 }
