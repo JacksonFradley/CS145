@@ -17,11 +17,8 @@ import java.util.ArrayList;
 public class WordSearchGenerator {
     ArrayList<ArrayList<Character>> wordSearch = new ArrayList<>();
 
-    public WordSearchGenerator(){
-
-    }
-
     public void generate(String newWord){
+        newWord = newWord.toUpperCase();
         int wordLength = newWord.length();
 
         if(wordSearch.isEmpty()) {
@@ -47,6 +44,17 @@ public class WordSearchGenerator {
 
             wordSearch = temp;
         }
+        else{
+            for(ArrayList<Character> arr : wordSearch) {
+                for (Character chr : arr) {
+
+
+
+
+
+                }
+            }
+        }
     }
 
     public String toString(){
@@ -63,5 +71,38 @@ public class WordSearchGenerator {
             temp += "\n";
         }
         return temp;
+    }
+
+    public void increaseSize(int amount){
+        ArrayList<ArrayList<Character>> temp = new ArrayList<>();
+
+        ArrayList<Character> bumperArr = new ArrayList<>();
+        for(int i = 0; i < wordSearch.size() + (amount*2); i ++){
+            bumperArr.add((char)32);
+        }
+        for(int i = 0; i<amount; i++) {
+            temp.add(bumperArr);
+        }
+
+        for(ArrayList<Character> arr: wordSearch){
+            ArrayList<Character> tempArr = new ArrayList<>();
+
+            for(int i = 0; i<amount; i++) {
+                tempArr.add((char)32);
+            }
+            for(Character chr: arr){
+                tempArr.add(chr);
+            }
+            for(int i = 0; i<amount; i++) {
+                tempArr.add((char)32);
+            }
+            temp.add(tempArr);
+        }
+
+        for(int i = 0; i<amount; i++) {
+            temp.add(bumperArr);
+        }
+
+        wordSearch = temp;
     }
 }
