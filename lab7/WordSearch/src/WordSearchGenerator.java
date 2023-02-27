@@ -20,14 +20,22 @@ public class WordSearchGenerator {
     ArrayList<ArrayList<Character>> wordSearch = new ArrayList<>();
     enum Directions {HORIZONTAL
         ,VERTICAL
-        //,DIAGONAL_UP
-        //,DIAGONAL_DOWN
+        ,DIAGONAL_UP
+        ,DIAGONAL_DOWN
         }
 
     int wordLength;
     Directions currentDirection;
     boolean triedH = false;
     boolean triedV = false;
+    boolean triedDD = false;
+    boolean triedDU = false;
+
+    ArrayList<int[]> horizontalMemory = new ArrayList<>();
+    ArrayList<int[]> verticalMemory = new ArrayList<>();
+    ArrayList<int[]> diagonalUpMemory = new ArrayList<>();
+    ArrayList<int[]> diagonalDownMemory = new ArrayList<>();
+
 
 
     public void generate(String newWord){
@@ -69,12 +77,17 @@ public class WordSearchGenerator {
         }
     }
 
-    public String toString(){
+    public String toString(boolean showSolution){
         String temp = "";
         for(ArrayList<Character> arr : wordSearch){
             for(Character chr : arr){
                 if(chr == (char)32){
-                    temp += "X ";
+                    if(showSolution) {
+                        temp += "X ";
+                    }
+                    else{
+                        temp += (char)((Math.random() * 26) + 65) + " ";
+                    }
                 }
                 else{
                     temp += chr.toString() + " ";
@@ -131,32 +144,61 @@ public class WordSearchGenerator {
     }
 
     public int[] scan(String word){
+        //System.out.println("Scanning for " + word);
         boolean canPlace;
-        int[] temp = new int[2];
+        boolean flagIntersection;
+        ArrayList<int[]> validPositions = new ArrayList<>();
 
+        // Come back to this and optimize the flagIntersection boolean
 
         switch(currentDirection){
             case HORIZONTAL:
                 triedH = true;
-                System.out.println("started H scan");
+                //System.out.println("started H scan");
                 for(int i = 0; i < wordSearch.size(); i++){
-                    System.out.println("Scanning array " + i);
+                    //System.out.println("Scanning array " + i);
                     for(int ii = 0; ii <= wordSearch.size() - wordLength; ii++){
-                        System.out.println("Scanning char " + ii);
+                        //System.out.println("Scanning char " + ii);
                         canPlace = true;
+                        flagIntersection = false;
+                        for(int[] memoryAccess: horizontalMemory){
+                            //System.out.println("accessing memory");
+                            for(int letter = 0; letter < memoryAccess[2] + 1; letter++){
+                                //System.out.println("checking letter " + letter);
+                                if(i == memoryAccess[0] && ii == memoryAccess[1] + letter){
+                                    //System.out.println("Memory conflict");
+                                    canPlace = false;
+                                }
+                            }
+                        }
                         for(int letter = 0; letter < wordLength; letter++){
                             if(!(wordSearch.get(i).get(ii + letter) == (char)32 || wordSearch.get(i).get(ii + letter) == word.charAt(letter))){
-                                System.out.println("Can't place at [" + ii + ", " + i + "]");
+                                //System.out.println("Can't place at [" + ii + ", " + i + "]");
                                 canPlace = false;
+                            }
+                            if(wordSearch.get(i).get(ii + letter) == word.charAt(letter)){
+                                flagIntersection = true;
+                                //System.out.println("flagging intersection");
                             }
                         }
                         if(canPlace){
-                            System.out.println("Can Place H");
+
+                                //System.out.println("Can Place H");
+                            int[] temp = new int[2];
                             temp[0] = i;
                             temp[1] = ii ;
-                            return temp;
+                            if(flagIntersection){
+                                store(temp);
+                                return temp;
+                            }
+                            validPositions.add(temp);
                         }
                     }
+                }
+                if(!validPositions.isEmpty()){
+                    int random = (int)(Math.random() * validPositions.size());
+                    store(validPositions.get(random));
+                    return validPositions.get(random);
                 }
                 if(!triedV){
                     currentDirection = Directions.VERTICAL;
@@ -165,23 +207,154 @@ public class WordSearchGenerator {
                 break;
             case VERTICAL:
                 triedV = true;
-                System.out.println("Started V scan");
+                //System.out.println("Started V scan");
                 for(int i = 0; i <= wordSearch.size() - wordLength; i++){
+                    //System.out.println("Scanning array " + i);
                     for(int ii = 0; ii < wordSearch.size(); ii++){
+                        //System.out.println("Scanning char " + ii);
                         canPlace = true;
+                        flagIntersection = false;
+                        for(int[] memoryAccess: verticalMemory){
+                            //System.out.println("accessing memory");
+                            for(int letter = 0; letter < memoryAccess[2] + 1; letter++){
+                                //System.out.println("checking letter " + letter);
+                                if(i == memoryAccess[0] + letter && ii == memoryAccess[1]){
+                                    //System.out.println("Memory conflict");
+                                    canPlace = false;
+                                }
+                            }
+                        }
                         for(int letter = 0; letter < wordLength; letter++){
                             if(!(wordSearch.get(i+letter).get(ii) == (char)32 || wordSearch.get(i + letter).get(ii) == word.charAt(letter))){
-                                System.out.println("Can't place at [" + ii + ", " + i + "]");
+                                //System.out.println("Can't place at [" + ii + ", " + i + "]");
                                 canPlace = false;
+                            }
+                            if(wordSearch.get(i + letter).get(ii) == word.charAt(letter)){
+                                flagIntersection = true;
+                                //System.out.println("flagging intersection");
                             }
                         }
                         if(canPlace){
-                            System.out.println("Can Place V");
+                            //System.out.println("Can Place V");
+                            int[] temp = new int[2];
                             temp[0] = i;
                             temp[1] = ii ;
-                            return temp;
+                            if(flagIntersection) {
+                                store(temp);
+                                return temp;
+                            }
+                            validPositions.add(temp);
                         }
                     }
+                }
+                if(!validPositions.isEmpty()){
+                    int random = (int)(Math.random() * validPositions.size());
+                    store(validPositions.get(random));
+                    return validPositions.get(random);
+                }
+                if(!triedDD) {
+                    currentDirection = Directions.DIAGONAL_DOWN;
+                    return this.scan(word);
+                }
+                break;
+            case DIAGONAL_DOWN:
+                triedDD = true;
+                //System.out.println("Started DD scan");
+                for(int i = 0; i <= wordSearch.size() - wordLength; i++){
+                    //System.out.println("Scanning array " + i);
+                    for(int ii = 0; ii <= wordSearch.size() - wordLength; ii++){
+                        //System.out.println("Scanning char " + ii);
+                        canPlace = true;
+                        flagIntersection = false;
+                        for(int[] memoryAccess: diagonalDownMemory){
+                            //System.out.println("accessing memory");
+                            for(int letter = 0; letter < memoryAccess[2] + 1; letter++){
+                                //System.out.println("checking letter " + letter);
+                                if(i == memoryAccess[0] + letter && ii == memoryAccess[1] + letter){
+                                    //System.out.println("Memory conflict");
+                                    canPlace = false;
+                                }
+                            }
+                        }
+                        for(int letter = 0; letter < wordLength; letter++){
+                            if(!(wordSearch.get(i+letter).get(ii+letter) == (char)32 || wordSearch.get(i + letter).get(ii+letter) == word.charAt(letter))){
+                                //System.out.println("Can't place at [" + ii + ", " + i + "]");
+                                canPlace = false;
+                            }
+                            if(wordSearch.get(i + letter).get(ii + letter) == word.charAt(letter)){
+                                flagIntersection = true;
+                                //System.out.println("flagging intersection");
+                            }
+                        }
+                        if(canPlace){
+                            //System.out.println("Can Place DD");
+                            int[] temp = new int[2];
+                            temp[0] = i;
+                            temp[1] = ii ;
+                            if(flagIntersection) {
+                                store(temp);
+                                return temp;
+                            }
+                            validPositions.add(temp);
+                        }
+                    }
+                }
+                if(!validPositions.isEmpty()){
+                    int random = (int)(Math.random() * validPositions.size());
+                    store(validPositions.get(random));
+                    return validPositions.get(random);
+                }
+                if(!triedH) {
+                    currentDirection = Directions.HORIZONTAL;
+                    return this.scan(word);
+                }
+                break;
+            case DIAGONAL_UP:
+                triedDU = true;
+                //System.out.println("Started DU scan");
+                for(int i = wordLength; i < wordSearch.size(); i++){
+                    //System.out.println("Scanning array " + i);
+                    for(int ii = 0; ii <= wordSearch.size() - wordLength; ii++){
+                        //System.out.println("Scanning char " + ii);
+                        canPlace = true;
+                        flagIntersection = false;
+                        for(int[] memoryAccess: diagonalUpMemory){
+                            //System.out.println("accessing memory");
+                            for(int letter = 0; letter < memoryAccess[2] + 1; letter++){
+                                //System.out.println("checking letter " + letter);
+                                if(i == memoryAccess[0] - letter && ii == memoryAccess[1] + letter){
+                                    //System.out.println("Memory conflict");
+                                    canPlace = false;
+                                }
+                            }
+                        }
+                        for(int letter = 0; letter < wordLength; letter++){
+                            if(!(wordSearch.get(i-letter).get(ii+letter) == (char)32 || wordSearch.get(i - letter).get(ii+letter) == word.charAt(letter))){
+                                //System.out.println("Can't place at [" + ii + ", " + i + "]");
+                                canPlace = false;
+                            }
+                            if(wordSearch.get(i - letter).get(ii + letter) == word.charAt(letter)){
+                                flagIntersection = true;
+                                //System.out.println("flagging intersection");
+                            }
+                        }
+                        if(canPlace){
+                            //System.out.println("Can Place DU");
+                            int[] temp = new int[2];
+                            temp[0] = i;
+                            temp[1] = ii ;
+                            if(flagIntersection) {
+                                store(temp);
+                                return temp;
+                            }
+                            validPositions.add(temp);
+                        }
+                    }
+                }
+                if(!validPositions.isEmpty()){
+                    int random = (int)(Math.random() * validPositions.size());
+                    store(validPositions.get(random));
+                    return validPositions.get(random);
                 }
                 if(!triedH) {
                     currentDirection = Directions.HORIZONTAL;
@@ -190,10 +363,11 @@ public class WordSearchGenerator {
                 break;
         }
 
-        temp[0] = -1;
-        temp[1] = -1;
-        System.out.println("scan failed");
-        return temp;
+        //System.out.println("failed scan, increasing size");
+        increaseSize(2);
+        triedH = false;
+        triedV = false;
+        return scan(word);
     }
 
     public void setRandomDirection(){
@@ -212,7 +386,33 @@ public class WordSearchGenerator {
                 case VERTICAL:
                     wordSearch.get(location[0] + letter).set(location[1], word.charAt(letter));
                     break;
+                case DIAGONAL_DOWN:
+                    wordSearch.get(location[0] + letter).set(location[1] + letter, word.charAt(letter));
+                    break;
+                case DIAGONAL_UP:
+                    wordSearch.get(location[0] - letter).set(location[1] + letter, word.charAt(letter));
             }
+        }
+    }
+
+    public void store(int[] position){
+        int[] temp = new int[3];
+        for(int i = 0; i< position.length; i++){
+            temp[i] = position[i];
+        }
+        temp[2] = wordLength;
+        switch(currentDirection){
+            case HORIZONTAL:
+                horizontalMemory.add(temp);
+                break;
+            case VERTICAL:
+                verticalMemory.add(temp);
+                break;
+            case DIAGONAL_DOWN:
+                diagonalDownMemory.add(temp);
+                break;
+            case DIAGONAL_UP:
+                diagonalUpMemory.add(temp);
         }
     }
 
